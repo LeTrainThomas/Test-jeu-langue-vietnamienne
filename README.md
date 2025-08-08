@@ -1,2 +1,444 @@
 # Test-jeu-langue-vietnamienne
 Just a test
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mini-jeu Vietnamien — Audrey / Thomas</title>
+<style>
+  :root{
+    --bg:#0f1724; --card:#0b1220; --accent:#7de3c7; --muted:#9aa8b2;
+    --glass: rgba(255,255,255,0.04);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,"Helvetica Neue",Arial;color:#e6f6f1;background:
+  radial-gradient(1200px 600px at 10% 10%, rgba(125,227,199,0.06), transparent),
+  linear-gradient(180deg,#071022 0%, #081827 100%);}
+  .app{max-width:980px;margin:20px auto;padding:18px;}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .logo{
+    width:60px;height:60px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#5bd3ff);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(7,18,36,0.6);
+    flex-shrink:0;
+  }
+  .logo svg{width:38px;height:38px;filter:drop-shadow(0 6px 20px rgba(7,18,36,0.5))}
+  h1{font-size:18px;margin:0}
+  p.lead{margin:0;color:var(--muted);font-size:13px}
+  .grid{display:grid;grid-template-columns:1fr 360px;gap:16px}
+  @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border-radius:14px;padding:16px;box-shadow:0 8px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  button{background:var(--glass);color:var(--accent);border:1px solid rgba(125,227,199,0.08);padding:8px 12px;border-radius:10px;font-weight:600}
+  .mode{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+  .flash{display:flex;flex-direction:column;gap:12px;align-items:stretch}
+  .big-card{background:linear-gradient(180deg, rgba(255,255,255,0.015), transparent);padding:18px;border-radius:12px;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;min-height:220px}
+  .word{font-size:28px;font-weight:700;color:#fff}
+  .trans{color:var(--muted);font-size:15px}
+  .hint{color:rgba(255,255,255,0.06);font-size:12px;padding:8px;border-radius:8px;background:linear-gradient(90deg, rgba(125,227,199,0.03), transparent)}
+  .quiz-options{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .opt{padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.02)}
+  .opt.correct{outline:3px solid rgba(125,227,199,0.18)}
+  .opt.wrong{outline:3px solid rgba(255,120,120,0.12)}
+  .controls .pill{background:#07182a;padding:6px 10px;border-radius:999px;color:var(--muted);font-weight:600}
+  .stats{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--muted)}
+  footer{margin-top:12px;color:var(--muted);font-size:12px;text-align:center}
+  /* record UI */
+  .rec-bar{height:6px;background:rgba(255,255,255,0.03);border-radius:6px;overflow:hidden}
+  .rec-level{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#5bd3ff)}
+  .micro{display:flex;gap:8px;align-items:center}
+  .small{font-size:13px;color:var(--muted)}
+  .icon-btn{background:linear-gradient(90deg,var(--accent),#5bd3ff);color:#042027;padding:10px;border-radius:12px;border:none}
+  .settings{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .nice-svg{width:100%;height:120px;opacity:0.12}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo" aria-hidden>
+      <!-- stylized lotus / speech bubble -->
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M32 6c6 0 12 5 14 11 4 10-8 18-14 30S14 27 18 17C20 11 26 6 32 6z" fill="#042027"/>
+        <path d="M32 10c4 0 8 3 9 7 3 8-6 14-9 24S18 25 21 17C23 13 27 10 32 10z" fill="#7de3c7"/>
+      </svg>
+    </div>
+    <div>
+      <h1>ViSpeak — Mots basiques en vietnamien</h1>
+      <p class="lead">Apprends les mots, écoute la prononciation, répète et gagne des étoiles ✨</p>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- left: main game -->
+    <section class="card">
+      <div class="controls">
+        <div class="pill">Mode</div>
+        <div class="mode" role="tablist" aria-label="Modes">
+          <button id="mode-flash" class="active">Flashcards</button>
+          <button id="mode-quiz">Quiz</button>
+          <button id="mode-practice">Écoute & répète</button>
+        </div>
+        <div class="pill">Niveau</div>
+        <select id="level">
+          <option value="all">Tous</option>
+          <option value="basic">Basique</option>
+        </select>
+        <div style="flex:1"></div>
+        <div class="stats">
+          <div id="score">⭐ 0</div>
+          <div id="progress">0 / 0</div>
+        </div>
+      </div>
+
+      <div id="mainArea" class="flash">
+        <!-- Flash / Quiz / Practice dynamic content inserted here -->
+      </div>
+
+      <footer>
+        Conseils : écoute 2-3 fois, puis enregistre-toi et compare. Pour iPhone : si la voix vietnamienne n'apparaît pas, vérifie les réglages vocaux ou installe les voix locales.
+      </footer>
+    </section>
+
+    <!-- right: sidebar -->
+    <aside class="card">
+      <h3>Vocabulaire rapide</h3>
+      <div id="vocabList" style="display:grid;gap:8px;margin-top:10px;max-height:360px;overflow:auto"></div>
+
+      <hr style="margin:14px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
+
+      <h4>Record & play</h4>
+      <div class="small">Appuie sur ▶︎ pour écouter, ● pour enregistrer</div>
+      <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+        <button id="playCurrent" class="icon-btn">▶︎ Écouter</button>
+        <button id="recBtn" style="background:#ff6b6b;color:white;border-radius:12px;padding:10px;border:none">● Enregistrer</button>
+        <button id="playBack" class="icon-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--accent)">⟲ Écoute-toi</button>
+      </div>
+      <div style="margin-top:10px">
+        <div class="rec-bar" aria-hidden><div id="recLevel" class="rec-level"></div></div>
+        <div class="small" style="margin-top:6px">Etat: <span id="recState">inactif</span></div>
+      </div>
+
+      <hr style="margin:14px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
+
+      <div class="settings">
+        <div class="small">Voix sélectionnée :</div>
+        <select id="voiceSelect"></select>
+        <button id="demoAll" class="icon-btn">▶︎ Lire toute la liste</button>
+      </div>
+
+      <svg class="nice-svg" viewBox="0 0 800 200" preserveAspectRatio="none" aria-hidden>
+        <defs>
+          <linearGradient id="g" x1="0" x2="1">
+            <stop offset="0" stop-color="#7de3c7"/><stop offset="1" stop-color="#5bd3ff"/>
+          </linearGradient>
+        </defs>
+        <rect width="800" height="200" fill="url(#g)" opacity="0.06"></rect>
+      </svg>
+    </aside>
+  </div>
+</div>
+
+<script>
+/* ====== DATA: vocabulaire (mot, écriture vietnamienne, traduction FR, niveau, exemple) ====== */
+const vocab = [
+  {word:"Xin chào", vi:"xin chào", fr:"Bonjour / Salut", level:"basic", note:"Xin chào!"},
+  {word:"Tạm biệt", vi:"tạm biệt", fr:"Au revoir", level:"basic"},
+  {word:"Cảm ơn", vi:"cảm ơn", fr:"Merci", level:"basic"},
+  {word:"Không", vi:"không", fr:"Non / Pas", level:"basic"},
+  {word:"Vâng", vi:"vâng", fr:"Oui", level:"basic"},
+  {word:"Làm ơn", vi:"làm ơn", fr:"S'il vous plaît", level:"basic"},
+  {word:"Xin lỗi", vi:"xin lỗi", fr:"Désolé", level:"basic"},
+  {word:"Tôi yêu bạn", vi:"tôi yêu bạn", fr:"Je t'aime", level:"basic"},
+  {word:"Nước", vi:"nước", fr:"Eau", level:"basic"},
+  {word:"Thức ăn", vi:"thức ăn", fr:"Nourriture / Repas", level:"basic"},
+  {word:"Nhà vệ sinh", vi:"nhà vệ sinh", fr:"Toilettes", level:"basic"}
+];
+
+/* ====== State ====== */
+let state = {
+  mode: 'flash', // flash | quiz | practice
+  index: 0,
+  score: 0,
+  seen: 0,
+  filtered: [],
+  current: null,
+  audioStream: null,
+  recorder: null,
+  recordedBlobs: [],
+  voices: []
+};
+
+/* ====== Helpers ====== */
+function $(q){return document.querySelector(q)}
+function $all(q){return Array.from(document.querySelectorAll(q))}
+
+function saveProgress(){
+  localStorage.setItem('vispeak_progress', JSON.stringify({score: state.score}));
+}
+function loadProgress(){
+  const d = localStorage.getItem('vispeak_progress');
+  if(d){ try{ const o = JSON.parse(d); state.score = o.score||0; }catch(e){}}
+}
+
+/* ====== UI init ====== */
+function init(){
+  loadProgress();
+  state.filtered = vocab.slice();
+  $('#score').textContent = `⭐ ${state.score}`;
+  $('#progress').textContent = `0 / ${state.filtered.length}`;
+  buildVocabList();
+  attachModeButtons();
+  populateVoiceList();
+  attachControls();
+  renderMain();
+  // try to get audio permission lazily when pressing record
+}
+function buildVocabList(){
+  const container = $('#vocabList'); container.innerHTML='';
+  vocab.forEach((v,i)=>{
+    const el = document.createElement('div');
+    el.className='hint';
+    el.style.display='flex'; el.style.justifyContent='space-between'; el.style.alignItems='center';
+    el.innerHTML = `<div><strong style="color:#fff">${v.word}</strong><div style="font-size:13px;color:var(--muted)">${v.fr}</div></div>
+      <div><button data-i="${i}" class="small playBtn" title="Écouter">▶︎</button></div>`;
+    container.appendChild(el);
+  });
+  $all('.playBtn').forEach(b=>b.addEventListener('click', (e)=>{ speak(vocab[+b.dataset.i].vi); }));
+}
+
+/* ====== Voice (SpeechSynthesis) ====== */
+function populateVoiceList(){
+  const sel = $('#voiceSelect');
+  function update(){
+    const voices = speechSynthesis.getVoices();
+    state.voices = voices;
+    sel.innerHTML = '';
+    voices.forEach((v,i)=>{
+      const opt = document.createElement('option');
+      opt.value = i; opt.textContent = `${v.name} — ${v.lang}`;
+      sel.appendChild(opt);
+    });
+    // try to select a vi-VN voice
+    const vi = voices.findIndex(v=>v.lang && v.lang.toLowerCase().startsWith('vi'));
+    if(vi>=0) sel.value = vi;
+  }
+  update();
+  speechSynthesis.onvoiceschanged = update;
+}
+function speak(text){
+  if(!('speechSynthesis' in window)){ alert("Synthèse vocale non disponible ici."); return; }
+  const ut = new SpeechSynthesisUtterance(text);
+  const sel = $('#voiceSelect');
+  if(sel && sel.value !== '') {
+    const v = state.voices[+sel.value];
+    if(v) ut.voice = v;
+  }
+  ut.lang = 'vi-VN';
+  ut.rate = 0.95;
+  ut.pitch = 1.0;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(ut);
+}
+
+/* ====== Main UI rendering ====== */
+function attachModeButtons(){
+  $('#mode-flash').addEventListener('click', ()=>{ state.mode='flash'; renderMain(); });
+  $('#mode-quiz').addEventListener('click', ()=>{ state.mode='quiz'; renderMain(); });
+  $('#mode-practice').addEventListener('click', ()=>{ state.mode='practice'; renderMain(); });
+}
+function attachControls(){
+  $('#playCurrent').addEventListener('click', ()=>{ if(state.current) speak(state.current.vi); });
+  $('#demoAll').addEventListener('click', async ()=>{
+    for(const v of state.filtered){ speak(v.vi); await sleep(900); }
+  });
+  $('#recBtn').addEventListener('click', toggleRecording);
+  $('#playBack').addEventListener('click', playRecording);
+  $('#level').addEventListener('change', (e)=>{ filterLevel(e.target.value); renderMain(); });
+}
+function filterLevel(l){
+  state.filtered = (l==='all')? vocab.slice() : vocab.filter(x=>x.level===l);
+  state.index = 0;
+  $('#progress').textContent = `${state.index+1} / ${state.filtered.length}`;
+}
+
+/* ====== Render based on mode ====== */
+function renderMain(){
+  // highlight selected mode btn
+  $all('.mode button').forEach(b=>b.classList.remove('active'));
+  $(`#mode-${state.mode}`).classList.add('active');
+
+  const area = $('#mainArea'); area.innerHTML='';
+  if(state.filtered.length===0){ area.innerHTML='<div class="big-card">Aucun mot</div>'; return; }
+
+  state.current = state.filtered[state.index % state.filtered.length];
+  $('#progress').textContent = `${state.index+1} / ${state.filtered.length}`;
+  if(state.mode==='flash') renderFlash(area);
+  else if(state.mode==='quiz') renderQuiz(area);
+  else if(state.mode==='practice') renderPractice(area);
+}
+
+/* FLASHCARDS */
+function renderFlash(area){
+  const c = document.createElement('div'); c.className='big-card';
+  c.innerHTML = `
+    <div style="display:flex;gap:8px;align-items:center;width:100%;justify-content:space-between">
+      <div style="text-align:left">
+        <div class="word">${state.current.word}</div>
+        <div class="trans">${state.current.fr}</div>
+      </div>
+      <div style="text-align:right">
+        <button id="hearBig" class="icon-btn">▶︎</button>
+        <button id="nextCard" class="icon-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--accent)">Suivant</button>
+      </div>
+    </div>
+    <div class="hint">Écoute la prononciation, puis essaie de répéter. Exemple : ${state.current.note||'-'}</div>
+  `;
+  area.appendChild(c);
+  $('#hearBig').addEventListener('click', ()=>speak(state.current.vi));
+  $('#nextCard').addEventListener('click', ()=>{ state.index=(state.index+1)%state.filtered.length; state.seen++; renderMain();});
+}
+
+/* QUIZ */
+function renderQuiz(area){
+  const c = document.createElement('div'); c.className='big-card';
+  const correct = state.current;
+  // build 3 distractors
+  let choices = [correct];
+  const others = state.filtered.filter(x=>x!==correct);
+  shuffleArray(others);
+  while(choices.length<4 && choices.length- (choices.includes(correct)?1:0) < 4){
+    if(others[choices.length-1]) choices.push(others[choices.length-1]);
+    else break;
+  }
+  // ensure total 4
+  while(choices.length<4){ choices.push(others[Math.floor(Math.random()*others.length)]); }
+  shuffleArray(choices);
+  c.innerHTML = `
+    <div style="width:100%">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div class="small">Quel mot correspond à :</div>
+          <div class="word">${correct.vi}</div>
+          <div class="trans">${correct.fr}</div>
+        </div>
+        <div>
+          <button id="hearQuiz" class="icon-btn">▶︎</button>
+        </div>
+      </div>
+      <div style="margin-top:10px" class="quiz-options">
+        ${choices.map((ch,i)=>`<div class="opt" data-index="${i}">${ch.word}<div style="font-size:12px;color:var(--muted)">${ch.fr}</div></div>`).join('')}
+      </div>
+    </div>
+  `;
+  area.appendChild(c);
+  $('#hearQuiz').addEventListener('click', ()=>speak(correct.vi));
+  $all('.opt').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      const chosen = choices[+opt.dataset.index];
+      if(chosen===correct){ opt.classList.add('correct'); state.score++; $('#score').textContent=`⭐ ${state.score}`; saveProgress(); }
+      else { opt.classList.add('wrong'); /* show correct */ const right = Array.from($all('.opt')).find(o=> choices[+o.dataset.index]===correct); right.classList.add('correct'); }
+      setTimeout(()=>{ state.index=(state.index+1)%state.filtered.length; renderMain(); }, 900);
+    });
+  });
+}
+
+/* PRACTICE (recording) */
+function renderPractice(area){
+  const c = document.createElement('div'); c.className='big-card';
+  c.innerHTML = `
+    <div style="text-align:center">
+      <div class="small">Répète après la voix</div>
+      <div class="word">${state.current.vi}</div>
+      <div class="trans">${state.current.fr}</div>
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:center">
+        <button id="hearPr" class="icon-btn">▶︎ Écouter</button>
+        <button id="recordPr" style="background:#ff6b6b;color:white;border-radius:12px;padding:10px;border:none">● Enregistrer</button>
+        <button id="playPr" class="icon-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--accent)">⟲ Écoute-toi</button>
+      </div>
+      <div style="margin-top:10px" class="hint">Astuce : commence lentement, écoute correctement les tons (très importants en vietnamien).</div>
+    </div>
+  `;
+  area.appendChild(c);
+  $('#hearPr').addEventListener('click', ()=>speak(state.current.vi));
+  $('#recordPr').addEventListener('click', ()=>{ toggleRecording(); });
+  $('#playPr').addEventListener('click', ()=>{ playRecording(); });
+}
+
+/* ====== Recording logic (simple) ====== */
+async function toggleRecording(){
+  const stateEl = $('#recState');
+  if($('#recBtn').dataset.recording==='1'){
+    // stop
+    if(state.recorder) state.recorder.stop();
+    $('#recBtn').dataset.recording='0';
+    $('#recBtn').textContent = '● Enregistrer';
+    stateEl.textContent='inactif';
+    return;
+  }
+  // start capture
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    state.audioStream = stream;
+    const mediaRecorder = new MediaRecorder(stream);
+    state.recorder = mediaRecorder;
+    state.recordedBlobs = [];
+    mediaRecorder.ondataavailable = (e)=>{ if(e.data && e.data.size>0) state.recordedBlobs.push(e.data); };
+    mediaRecorder.onstop = ()=>{
+      // create blob
+      const blob = new Blob(state.recordedBlobs, {type:'audio/webm'});
+      state.lastBlob = blob;
+      $('#recState').textContent = 'enregistré';
+    };
+    mediaRecorder.start();
+    $('#recBtn').dataset.recording='1';
+    $('#recBtn').textContent='■ Stop';
+    $('#recState').textContent='enregistrement...';
+    // visualizer
+    attachVisualizer(stream);
+  }catch(e){
+    alert("Impossible d'accéder au micro : " + e.message);
+  }
+}
+
+function playRecording(){
+  if(!state.lastBlob){ alert("Aucune enregistrement trouvé — enregistre-toi d'abord."); return; }
+  const url = URL.createObjectURL(state.lastBlob);
+  const a = new Audio(url); a.play();
+}
+
+/* simple visual level meter */
+let analyser;
+function attachVisualizer(stream){
+  try{
+    const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const source = audioCtx.createMediaStreamSource(stream);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    source.connect(analyser);
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    const levelEl = $('#recLevel');
+    function draw(){
+      if(!analyser) return;
+      analyser.getByteFrequencyData(data);
+      let sum=0; for(let i=0;i<data.length;i++) sum+=data[i];
+      const avg = sum / data.length;
+      const pct = Math.min(100, Math.max(0, (avg/128)*100));
+      levelEl.style.width = pct + '%';
+      requestAnimationFrame(draw);
+    }
+    draw();
+  }catch(e){
+    console.warn("visualizer:",e);
+  }
+}
+
+/* ====== Utilities ====== */
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ====== Startup ====== */
+init();
+
+</script>
+</body>
+</html>
