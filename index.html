@@ -1,442 +1,479 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Mini-jeu Vietnamien — Audrey / Thomas</title>
-<style>
-  :root{
-    --bg:#0f1724; --card:#0b1220; --accent:#7de3c7; --muted:#9aa8b2;
-    --glass: rgba(255,255,255,0.04);
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,"Helvetica Neue",Arial;color:#e6f6f1;background:
-  radial-gradient(1200px 600px at 10% 10%, rgba(125,227,199,0.06), transparent),
-  linear-gradient(180deg,#071022 0%, #081827 100%);}
-  .app{max-width:980px;margin:20px auto;padding:18px;}
-  header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
-  .logo{
-    width:60px;height:60px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#5bd3ff);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(7,18,36,0.6);
-    flex-shrink:0;
-  }
-  .logo svg{width:38px;height:38px;filter:drop-shadow(0 6px 20px rgba(7,18,36,0.5))}
-  h1{font-size:18px;margin:0}
-  p.lead{margin:0;color:var(--muted);font-size:13px}
-  .grid{display:grid;grid-template-columns:1fr 360px;gap:16px}
-  @media(max-width:880px){.grid{grid-template-columns:1fr}}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border-radius:14px;padding:16px;box-shadow:0 8px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
-  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-  button{background:var(--glass);color:var(--accent);border:1px solid rgba(125,227,199,0.08);padding:8px 12px;border-radius:10px;font-weight:600}
-  .mode{display:flex;gap:8px;align-items:center;margin-bottom:12px}
-  .flash{display:flex;flex-direction:column;gap:12px;align-items:stretch}
-  .big-card{background:linear-gradient(180deg, rgba(255,255,255,0.015), transparent);padding:18px;border-radius:12px;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;min-height:220px}
-  .word{font-size:28px;font-weight:700;color:#fff}
-  .trans{color:var(--muted);font-size:15px}
-  .hint{color:rgba(255,255,255,0.06);font-size:12px;padding:8px;border-radius:8px;background:linear-gradient(90deg, rgba(125,227,199,0.03), transparent)}
-  .quiz-options{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-  .opt{padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.02)}
-  .opt.correct{outline:3px solid rgba(125,227,199,0.18)}
-  .opt.wrong{outline:3px solid rgba(255,120,120,0.12)}
-  .controls .pill{background:#07182a;padding:6px 10px;border-radius:999px;color:var(--muted);font-weight:600}
-  .stats{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--muted)}
-  footer{margin-top:12px;color:var(--muted);font-size:12px;text-align:center}
-  /* record UI */
-  .rec-bar{height:6px;background:rgba(255,255,255,0.03);border-radius:6px;overflow:hidden}
-  .rec-level{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#5bd3ff)}
-  .micro{display:flex;gap:8px;align-items:center}
-  .small{font-size:13px;color:var(--muted)}
-  .icon-btn{background:linear-gradient(90deg,var(--accent),#5bd3ff);color:#042027;padding:10px;border-radius:12px;border:none}
-  .settings{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-  .nice-svg{width:100%;height:120px;opacity:0.12}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tri Cosmétique : Recyclable ou Perturbateur ?</title>
+  <style>
+    :root{
+      --bg:#0b1020;/* nuit bleutée */
+      --panel:#121a33;
+      --card:#19254a;
+      --accent:#8fd3ff;
+      --accent-2:#b28bff;
+      --good:#38d39f;
+      --bad:#ff6b6b;
+      --text:#eaf2ff;
+      --muted:#b9c2d6;
+      --shadow:0 10px 25px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 70% -10%, rgba(178,139,255,.15), transparent 60%),
+                  radial-gradient(900px 600px at -10% 20%, rgba(143,211,255,.18), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+      min-height:100svh;
+      display:flex; flex-direction:column;
+    }
+    header{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(10,15,30,.8), rgba(10,15,30,0));
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .wrap{max-width:1100px; margin:0 auto; padding:16px 20px}
+    h1{margin:0;font-weight:800;letter-spacing:.2px;}
+    .sub{color:var(--muted); margin-top:6px}
+    .topbar{display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-top:14px}
+    select, button, .pill{
+      background:var(--panel); color:var(--text); border:1px solid rgba(255,255,255,.08);
+      padding:10px 12px; border-radius:14px; box-shadow:var(--shadow);
+      font-weight:600;
+    }
+    button{cursor:pointer; transition: transform .06s ease, background .2s}
+    button:hover{transform:translateY(-1px)}
+    .grid{
+      display:grid; grid-template-columns: 340px 1fr; gap:18px; padding:20px
+    }
+    @media (max-width: 960px){.grid{grid-template-columns:1fr}}
+
+    /* Panneaux */
+    .panel{background:linear-gradient(185deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.09); border-radius:18px; padding:16px; box-shadow:var(--shadow)}
+
+    /* Colonne gauche */
+    .status{
+      display:grid; grid-template-columns:1fr 1fr; gap:12px;
+    }
+    .bin{
+      min-height:180px; background:var(--card); border-radius:14px; padding:12px; border:2px dashed rgba(255,255,255,.13);
+      transition: border-color .2s, background .2s;
+    }
+    .bin h3{margin:0 0 8px 0}
+    .bin[data-type="recyclable"]{--bin-color:var(--good)}
+    .bin[data-type="perturbateur"]{--bin-color:var(--bad)}
+    .bin .hint{color:var(--muted); font-size:.9rem}
+    .bin.active{border-color:var(--bin-color); background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02))}
+
+    /* Cartes objets */
+    .cards{margin-top:14px; display:grid; grid-template-columns:1fr; gap:12px}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:12px; display:flex; align-items:center; gap:12px; box-shadow:var(--shadow);
+      cursor:grab; user-select:none;
+    }
+    .dragging{opacity:.6; transform:scale(.98)}
+    .material{font-size:.8rem; color:var(--muted)}
+    .badge{font-size:.75rem; padding:6px 8px; border-radius:999px; font-weight:700}
+    .badge.good{background:rgba(56,211,159,.16); border:1px solid rgba(56,211,159,.4);}
+    .badge.bad{background:rgba(255,107,107,.14); border:1px solid rgba(255,107,107,.4);}
+    .item-title{font-weight:700}
+
+    /* Colonne droite */
+    .play{display:grid; grid-template-columns:1fr; gap:16px}
+    .scoreBox{display:flex; gap:10px; flex-wrap:wrap}
+    .pill{display:inline-flex; align-items:center; gap:8px; font-weight:700}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.good{background:var(--good)}
+    .dot.bad{background:var(--bad)}
+
+    .board{display:grid; grid-template-columns: 1fr 1fr; gap:16px}
+    .dropzone{min-height:240px; border-radius:18px; padding:14px; background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border:2px dashed rgba(255,255,255,.12);
+      transition: border-color .2s, background .2s;
+    }
+    .dropzone h2{margin:0 0 10px 0}
+    .dropzone[data-type="recyclable"]{--zone:var(--good)}
+    .dropzone[data-type="perturbateur"]{--zone:var(--bad)}
+    .dropzone.active{border-color:var(--zone); background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03))}
+
+    .actions{display:flex; gap:10px; justify-content:flex-end}
+
+    /* Modale explications */
+    dialog{border:none; border-radius:18px; padding:0; overflow:hidden; background:var(--panel); color:var(--text); box-shadow:var(--shadow);}
+    dialog::backdrop{background:rgba(5,8,18,.6)}
+    .modal{padding:18px}
+    .modal h3{margin-top:0}
+    .explain{display:grid; gap:10px}
+    .explain .row{display:grid; gap:8px; background:var(--card); padding:12px; border-radius:14px; border:1px solid rgba(255,255,255,.1)}
+    .explain .row .w{display:flex; gap:8px; align-items:center}
+
+    /* Confetti */
+    .confetti{position:fixed; inset:0; pointer-events:none}
+  </style>
 </head>
 <body>
-<div class="app">
   <header>
-    <div class="logo" aria-hidden>
-      <!-- stylized lotus / speech bubble -->
-      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M32 6c6 0 12 5 14 11 4 10-8 18-14 30S14 27 18 17C20 11 26 6 32 6z" fill="#042027"/>
-        <path d="M32 10c4 0 8 3 9 7 3 8-6 14-9 24S18 25 21 17C23 13 27 10 32 10z" fill="#7de3c7"/>
-      </svg>
-    </div>
-    <div>
-      <h1>ViSpeak — Mots basiques en vietnamien</h1>
-      <p class="lead">Apprends les mots, écoute la prononciation, répète et gagne des étoiles ✨</p>
+    <div class="wrap">
+      <h1>♻️ Tri Cosmétique — Recyclable ou Perturbateur du recyclage ?</h1>
+      <div class="sub">Fais glisser chaque emballage dans la bonne zone selon le pays choisi. Règles simplifiées — elles peuvent varier localement.</div>
+      <div class="topbar">
+        <label for="country">Pays :</label>
+        <select id="country" aria-label="Choisir le pays">
+          <option value="FR">France</option>
+          <option value="DE">Allemagne</option>
+          <option value="UK">Royaume-Uni</option>
+          <option value="US">États-Unis</option>
+        </select>
+        <button id="reshuffle">🔁 Mélanger</button>
+        <button id="reset">↩️ Recommencer</button>
+        <span class="pill">⏱️ <span id="timer">00:00</span></span>
+        <span class="pill">⭐ Streak: <span id="streak">0</span></span>
+        <span class="pill">🏆 Score: <span id="score">0</span>/<span id="total">0</span></span>
+      </div>
     </div>
   </header>
 
-  <div class="grid">
-    <!-- left: main game -->
-    <section class="card">
-      <div class="controls">
-        <div class="pill">Mode</div>
-        <div class="mode" role="tablist" aria-label="Modes">
-          <button id="mode-flash" class="active">Flashcards</button>
-          <button id="mode-quiz">Quiz</button>
-          <button id="mode-practice">Écoute & répète</button>
+  <main class="wrap">
+    <div class="grid">
+      <!-- Colonne gauche: Hints + Cartes -->
+      <section class="panel">
+        <h2 style="margin-top:0">📘 Aide rapide</h2>
+        <div class="status">
+          <div class="bin" data-type="recyclable">
+            <h3>Recyclable</h3>
+            <div class="hint">Bouteilles et flacons en PET/PE/PP, propres, formats > 5 cm, étiquettes <em>lavables/float</em>, mono-matériau.</div>
+          </div>
+          <div class="bin" data-type="perturbateur">
+            <h3>Perturbateur</h3>
+            <div class="hint">Mix de matériaux (miroirs, aimants), petite taille, pompes non séparables, étiquettes opaques couvrantes difficiles à laver.</div>
+          </div>
         </div>
-        <div class="pill">Niveau</div>
-        <select id="level">
-          <option value="all">Tous</option>
-          <option value="basic">Basique</option>
-        </select>
-        <div style="flex:1"></div>
-        <div class="stats">
-          <div id="score">⭐ 0</div>
-          <div id="progress">0 / 0</div>
+        <div class="cards" id="cards"></div>
+      </section>
+
+      <!-- Colonne droite: Plateau de jeu -->
+      <section class="panel play">
+        <div class="scoreBox">
+          <span class="pill"><span class="dot good"></span> Bon tri</span>
+          <span class="pill"><span class="dot bad"></span> Mauvais tri</span>
         </div>
-      </div>
-
-      <div id="mainArea" class="flash">
-        <!-- Flash / Quiz / Practice dynamic content inserted here -->
-      </div>
-
-      <footer>
-        Conseils : écoute 2-3 fois, puis enregistre-toi et compare. Pour iPhone : si la voix vietnamienne n'apparaît pas, vérifie les réglages vocaux ou installe les voix locales.
-      </footer>
-    </section>
-
-    <!-- right: sidebar -->
-    <aside class="card">
-      <h3>Vocabulaire rapide</h3>
-      <div id="vocabList" style="display:grid;gap:8px;margin-top:10px;max-height:360px;overflow:auto"></div>
-
-      <hr style="margin:14px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
-
-      <h4>Record & play</h4>
-      <div class="small">Appuie sur ▶︎ pour écouter, ● pour enregistrer</div>
-      <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
-        <button id="playCurrent" class="icon-btn">▶︎ Écouter</button>
-        <button id="recBtn" style="background:#ff6b6b;color:white;border-radius:12px;padding:10px;border:none">● Enregistrer</button>
-        <button id="playBack" class="icon-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--accent)">⟲ Écoute-toi</button>
-      </div>
-      <div style="margin-top:10px">
-        <div class="rec-bar" aria-hidden><div id="recLevel" class="rec-level"></div></div>
-        <div class="small" style="margin-top:6px">Etat: <span id="recState">inactif</span></div>
-      </div>
-
-      <hr style="margin:14px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
-
-      <div class="settings">
-        <div class="small">Voix sélectionnée :</div>
-        <select id="voiceSelect"></select>
-        <button id="demoAll" class="icon-btn">▶︎ Lire toute la liste</button>
-      </div>
-
-      <svg class="nice-svg" viewBox="0 0 800 200" preserveAspectRatio="none" aria-hidden>
-        <defs>
-          <linearGradient id="g" x1="0" x2="1">
-            <stop offset="0" stop-color="#7de3c7"/><stop offset="1" stop-color="#5bd3ff"/>
-          </linearGradient>
-        </defs>
-        <rect width="800" height="200" fill="url(#g)" opacity="0.06"></rect>
-      </svg>
-    </aside>
-  </div>
-</div>
-
-<script>
-/* ====== DATA: vocabulaire (mot, écriture vietnamienne, traduction FR, niveau, exemple) ====== */
-const vocab = [
-  {word:"Xin chào", vi:"xin chào", fr:"Bonjour / Salut", level:"basic", note:"Xin chào!"},
-  {word:"Tạm biệt", vi:"tạm biệt", fr:"Au revoir", level:"basic"},
-  {word:"Cảm ơn", vi:"cảm ơn", fr:"Merci", level:"basic"},
-  {word:"Không", vi:"không", fr:"Non / Pas", level:"basic"},
-  {word:"Vâng", vi:"vâng", fr:"Oui", level:"basic"},
-  {word:"Làm ơn", vi:"làm ơn", fr:"S'il vous plaît", level:"basic"},
-  {word:"Xin lỗi", vi:"xin lỗi", fr:"Désolé", level:"basic"},
-  {word:"Tôi yêu bạn", vi:"tôi yêu bạn", fr:"Je t'aime", level:"basic"},
-  {word:"Nước", vi:"nước", fr:"Eau", level:"basic"},
-  {word:"Thức ăn", vi:"thức ăn", fr:"Nourriture / Repas", level:"basic"},
-  {word:"Nhà vệ sinh", vi:"nhà vệ sinh", fr:"Toilettes", level:"basic"}
-];
-
-/* ====== State ====== */
-let state = {
-  mode: 'flash', // flash | quiz | practice
-  index: 0,
-  score: 0,
-  seen: 0,
-  filtered: [],
-  current: null,
-  audioStream: null,
-  recorder: null,
-  recordedBlobs: [],
-  voices: []
-};
-
-/* ====== Helpers ====== */
-function $(q){return document.querySelector(q)}
-function $all(q){return Array.from(document.querySelectorAll(q))}
-
-function saveProgress(){
-  localStorage.setItem('vispeak_progress', JSON.stringify({score: state.score}));
-}
-function loadProgress(){
-  const d = localStorage.getItem('vispeak_progress');
-  if(d){ try{ const o = JSON.parse(d); state.score = o.score||0; }catch(e){}}
-}
-
-/* ====== UI init ====== */
-function init(){
-  loadProgress();
-  state.filtered = vocab.slice();
-  $('#score').textContent = `⭐ ${state.score}`;
-  $('#progress').textContent = `0 / ${state.filtered.length}`;
-  buildVocabList();
-  attachModeButtons();
-  populateVoiceList();
-  attachControls();
-  renderMain();
-  // try to get audio permission lazily when pressing record
-}
-function buildVocabList(){
-  const container = $('#vocabList'); container.innerHTML='';
-  vocab.forEach((v,i)=>{
-    const el = document.createElement('div');
-    el.className='hint';
-    el.style.display='flex'; el.style.justifyContent='space-between'; el.style.alignItems='center';
-    el.innerHTML = `<div><strong style="color:#fff">${v.word}</strong><div style="font-size:13px;color:var(--muted)">${v.fr}</div></div>
-      <div><button data-i="${i}" class="small playBtn" title="Écouter">▶︎</button></div>`;
-    container.appendChild(el);
-  });
-  $all('.playBtn').forEach(b=>b.addEventListener('click', (e)=>{ speak(vocab[+b.dataset.i].vi); }));
-}
-
-/* ====== Voice (SpeechSynthesis) ====== */
-function populateVoiceList(){
-  const sel = $('#voiceSelect');
-  function update(){
-    const voices = speechSynthesis.getVoices();
-    state.voices = voices;
-    sel.innerHTML = '';
-    voices.forEach((v,i)=>{
-      const opt = document.createElement('option');
-      opt.value = i; opt.textContent = `${v.name} — ${v.lang}`;
-      sel.appendChild(opt);
-    });
-    // try to select a vi-VN voice
-    const vi = voices.findIndex(v=>v.lang && v.lang.toLowerCase().startsWith('vi'));
-    if(vi>=0) sel.value = vi;
-  }
-  update();
-  speechSynthesis.onvoiceschanged = update;
-}
-function speak(text){
-  if(!('speechSynthesis' in window)){ alert("Synthèse vocale non disponible ici."); return; }
-  const ut = new SpeechSynthesisUtterance(text);
-  const sel = $('#voiceSelect');
-  if(sel && sel.value !== '') {
-    const v = state.voices[+sel.value];
-    if(v) ut.voice = v;
-  }
-  ut.lang = 'vi-VN';
-  ut.rate = 0.95;
-  ut.pitch = 1.0;
-  speechSynthesis.cancel();
-  speechSynthesis.speak(ut);
-}
-
-/* ====== Main UI rendering ====== */
-function attachModeButtons(){
-  $('#mode-flash').addEventListener('click', ()=>{ state.mode='flash'; renderMain(); });
-  $('#mode-quiz').addEventListener('click', ()=>{ state.mode='quiz'; renderMain(); });
-  $('#mode-practice').addEventListener('click', ()=>{ state.mode='practice'; renderMain(); });
-}
-function attachControls(){
-  $('#playCurrent').addEventListener('click', ()=>{ if(state.current) speak(state.current.vi); });
-  $('#demoAll').addEventListener('click', async ()=>{
-    for(const v of state.filtered){ speak(v.vi); await sleep(900); }
-  });
-  $('#recBtn').addEventListener('click', toggleRecording);
-  $('#playBack').addEventListener('click', playRecording);
-  $('#level').addEventListener('change', (e)=>{ filterLevel(e.target.value); renderMain(); });
-}
-function filterLevel(l){
-  state.filtered = (l==='all')? vocab.slice() : vocab.filter(x=>x.level===l);
-  state.index = 0;
-  $('#progress').textContent = `${state.index+1} / ${state.filtered.length}`;
-}
-
-/* ====== Render based on mode ====== */
-function renderMain(){
-  // highlight selected mode btn
-  $all('.mode button').forEach(b=>b.classList.remove('active'));
-  $(`#mode-${state.mode}`).classList.add('active');
-
-  const area = $('#mainArea'); area.innerHTML='';
-  if(state.filtered.length===0){ area.innerHTML='<div class="big-card">Aucun mot</div>'; return; }
-
-  state.current = state.filtered[state.index % state.filtered.length];
-  $('#progress').textContent = `${state.index+1} / ${state.filtered.length}`;
-  if(state.mode==='flash') renderFlash(area);
-  else if(state.mode==='quiz') renderQuiz(area);
-  else if(state.mode==='practice') renderPractice(area);
-}
-
-/* FLASHCARDS */
-function renderFlash(area){
-  const c = document.createElement('div'); c.className='big-card';
-  c.innerHTML = `
-    <div style="display:flex;gap:8px;align-items:center;width:100%;justify-content:space-between">
-      <div style="text-align:left">
-        <div class="word">${state.current.word}</div>
-        <div class="trans">${state.current.fr}</div>
-      </div>
-      <div style="text-align:right">
-        <button id="hearBig" class="icon-btn">▶︎</button>
-        <button id="nextCard" class="icon-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--accent)">Suivant</button>
-      </div>
+        <div class="board">
+          <div class="dropzone" data-type="recyclable" aria-label="Zone Recyclable">
+            <h2>🟢 Recyclable</h2>
+            <div class="zone-list" id="zone-recyclable"></div>
+          </div>
+          <div class="dropzone" data-type="perturbateur" aria-label="Zone Perturbateur">
+            <h2>🔴 Perturbateur du recyclage</h2>
+            <div class="zone-list" id="zone-perturbateur"></div>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="validate">Valider le tri</button>
+          <button id="showExplanations">Voir les explications</button>
+        </div>
+      </section>
     </div>
-    <div class="hint">Écoute la prononciation, puis essaie de répéter. Exemple : ${state.current.note||'-'}</div>
-  `;
-  area.appendChild(c);
-  $('#hearBig').addEventListener('click', ()=>speak(state.current.vi));
-  $('#nextCard').addEventListener('click', ()=>{ state.index=(state.index+1)%state.filtered.length; state.seen++; renderMain();});
-}
+  </main>
 
-/* QUIZ */
-function renderQuiz(area){
-  const c = document.createElement('div'); c.className='big-card';
-  const correct = state.current;
-  // build 3 distractors
-  let choices = [correct];
-  const others = state.filtered.filter(x=>x!==correct);
-  shuffleArray(others);
-  while(choices.length<4 && choices.length- (choices.includes(correct)?1:0) < 4){
-    if(others[choices.length-1]) choices.push(others[choices.length-1]);
-    else break;
-  }
-  // ensure total 4
-  while(choices.length<4){ choices.push(others[Math.floor(Math.random()*others.length)]); }
-  shuffleArray(choices);
-  c.innerHTML = `
-    <div style="width:100%">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div class="small">Quel mot correspond à :</div>
-          <div class="word">${correct.vi}</div>
-          <div class="trans">${correct.fr}</div>
-        </div>
-        <div>
-          <button id="hearQuiz" class="icon-btn">▶︎</button>
-        </div>
-      </div>
-      <div style="margin-top:10px" class="quiz-options">
-        ${choices.map((ch,i)=>`<div class="opt" data-index="${i}">${ch.word}<div style="font-size:12px;color:var(--muted)">${ch.fr}</div></div>`).join('')}
-      </div>
+  <dialog id="explainDialog">
+    <div class="modal">
+      <h3>Explications par emballage (<span id="expCountry"></span>)</h3>
+      <div class="explain" id="explainList"></div>
+      <div style="text-align:right; margin-top:12px"><button onclick="document.getElementById('explainDialog').close()">Fermer</button></div>
     </div>
-  `;
-  area.appendChild(c);
-  $('#hearQuiz').addEventListener('click', ()=>speak(correct.vi));
-  $all('.opt').forEach(opt=>{
-    opt.addEventListener('click', ()=>{
-      const chosen = choices[+opt.dataset.index];
-      if(chosen===correct){ opt.classList.add('correct'); state.score++; $('#score').textContent=`⭐ ${state.score}`; saveProgress(); }
-      else { opt.classList.add('wrong'); /* show correct */ const right = Array.from($all('.opt')).find(o=> choices[+o.dataset.index]===correct); right.classList.add('correct'); }
-      setTimeout(()=>{ state.index=(state.index+1)%state.filtered.length; renderMain(); }, 900);
-    });
-  });
-}
+  </dialog>
 
-/* PRACTICE (recording) */
-function renderPractice(area){
-  const c = document.createElement('div'); c.className='big-card';
-  c.innerHTML = `
-    <div style="text-align:center">
-      <div class="small">Répète après la voix</div>
-      <div class="word">${state.current.vi}</div>
-      <div class="trans">${state.current.fr}</div>
-      <div style="margin-top:12px;display:flex;gap:8px;justify-content:center">
-        <button id="hearPr" class="icon-btn">▶︎ Écouter</button>
-        <button id="recordPr" style="background:#ff6b6b;color:white;border-radius:12px;padding:10px;border:none">● Enregistrer</button>
-        <button id="playPr" class="icon-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--accent)">⟲ Écoute-toi</button>
-      </div>
-      <div style="margin-top:10px" class="hint">Astuce : commence lentement, écoute correctement les tons (très importants en vietnamien).</div>
-    </div>
-  `;
-  area.appendChild(c);
-  $('#hearPr').addEventListener('click', ()=>speak(state.current.vi));
-  $('#recordPr').addEventListener('click', ()=>{ toggleRecording(); });
-  $('#playPr').addEventListener('click', ()=>{ playRecording(); });
-}
+  <canvas class="confetti" id="confetti"></canvas>
 
-/* ====== Recording logic (simple) ====== */
-async function toggleRecording(){
-  const stateEl = $('#recState');
-  if($('#recBtn').dataset.recording==='1'){
-    // stop
-    if(state.recorder) state.recorder.stop();
-    $('#recBtn').dataset.recording='0';
-    $('#recBtn').textContent = '● Enregistrer';
-    stateEl.textContent='inactif';
-    return;
-  }
-  // start capture
-  try{
-    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-    state.audioStream = stream;
-    const mediaRecorder = new MediaRecorder(stream);
-    state.recorder = mediaRecorder;
-    state.recordedBlobs = [];
-    mediaRecorder.ondataavailable = (e)=>{ if(e.data && e.data.size>0) state.recordedBlobs.push(e.data); };
-    mediaRecorder.onstop = ()=>{
-      // create blob
-      const blob = new Blob(state.recordedBlobs, {type:'audio/webm'});
-      state.lastBlob = blob;
-      $('#recState').textContent = 'enregistré';
-    };
-    mediaRecorder.start();
-    $('#recBtn').dataset.recording='1';
-    $('#recBtn').textContent='■ Stop';
-    $('#recState').textContent='enregistrement...';
-    // visualizer
-    attachVisualizer(stream);
-  }catch(e){
-    alert("Impossible d'accéder au micro : " + e.message);
-  }
-}
-
-function playRecording(){
-  if(!state.lastBlob){ alert("Aucune enregistrement trouvé — enregistre-toi d'abord."); return; }
-  const url = URL.createObjectURL(state.lastBlob);
-  const a = new Audio(url); a.play();
-}
-
-/* simple visual level meter */
-let analyser;
-function attachVisualizer(stream){
-  try{
-    const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-    const source = audioCtx.createMediaStreamSource(stream);
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 256;
-    source.connect(analyser);
-    const data = new Uint8Array(analyser.frequencyBinCount);
-    const levelEl = $('#recLevel');
-    function draw(){
-      if(!analyser) return;
-      analyser.getByteFrequencyData(data);
-      let sum=0; for(let i=0;i<data.length;i++) sum+=data[i];
-      const avg = sum / data.length;
-      const pct = Math.min(100, Math.max(0, (avg/128)*100));
-      levelEl.style.width = pct + '%';
-      requestAnimationFrame(draw);
+  <script>
+  // --- Données du jeu ---
+  // Règles simplifiées (pédagogiques, non contractuelles). Les pratiques varient localement.
+  const ITEMS = [
+    {
+      id: 'abs-lipstick',
+      name: 'Rouge à lèvres',
+      material: 'ABS, petit format, éléments intégrés',
+      icon: '💄',
+      rules: {
+        FR: {type:'perturbateur', why:'Petit format multi-pièces (mécanisme + décor). Difficile à trier et recycler.'},
+        DE: {type:'perturbateur', why:'Petite taille et mélange de matériaux → sort au crible.'},
+        UK: {type:'perturbateur', why:'Compact multi-matières (ABS + inserts) non accepté en flux standard.'},
+        US: {type:'perturbateur', why:'La plupart des MRFs ne captent pas les petits objets multi-matières.'}
+      }
+    },
+    {
+      id: 'pet-shampoo-opaque-label',
+      name: 'Bouteille shampooing',
+      material: 'PET transparent + étiquette opaque couvrante',
+      icon: '🧴',
+      rules: {
+        FR: {type:'perturbateur', why:'Étiquette opaque couvrante non détachable/float → perturbe l’identification NIR et le lavage.'},
+        DE: {type:'recyclable', why:'Si étiquette <em>wash-off</em>/float (pratique courante), la bouteille PET est recyclable.'},
+        UK: {type:'perturbateur', why:'Sleeve opaque couvrant souvent classé perturbateur s’il n’est pas <em>wash-off</em>.'},
+        US: {type:'perturbateur', why:'Full-sleeve opaque non float → accepté de façon limitée; souvent perturbateur.'}
+      }
+    },
+    {
+      id: 'pp-jar-opaque',
+      name: 'Pot de crème',
+      material: 'Polypropylène (PP) opaque',
+      icon: '🫙',
+      rules: {
+        FR: {type:'recyclable', why:'Flux tous plastiques : pots et barquettes PP généralement acceptés (propres).'},
+        DE: {type:'recyclable', why:'PP rigide (mono-matériau) accepté dans le sac jaune/PMC.'},
+        UK: {type:'recyclable', why:'De nombreuses collectivités acceptent les pots PP ; vérifier localement.'},
+        US: {type:'perturbateur', why:'Acceptation variable selon les villes ; souvent non pris en charge en dehors des bouteilles/flacons.'}
+      }
+    },
+    {
+      id: 'pp-compact',
+      name: 'Boîtier de maquillage',
+      material: 'PP avec charnière, miroir, décor',
+      icon: '🎛️',
+      rules: {
+        FR: {type:'perturbateur', why:'Éléments multiples (charnière, miroir, aimant) → composite difficile à recycler.'},
+        DE: {type:'perturbateur', why:'Objet composite/small parts → tri défavorable.'},
+        UK: {type:'perturbateur', why:'Présence de miroir/aimant → perturbateur.'},
+        US: {type:'perturbateur', why:'Petite taille + multi-matériaux → retrait au tri.'}
+      }
+    },
+    {
+      id: 'pe-bottle-opaque',
+      name: 'Flacon de douche',
+      material: 'PE (HDPE) opaque',
+      icon: '🧼',
+      rules: {
+        FR: {type:'recyclable', why:'Flacon PE rigide (bain/douche) accepté en flux standard.'},
+        DE: {type:'recyclable', why:'PE/HDPE rigide accepté dans le sac jaune.'},
+        UK: {type:'recyclable', why:'HDPE bottle généralement acceptée (rincer, remettre le bouchon).'},
+        US: {type:'recyclable', why:'Beaucoup de programmes acceptent les bouteilles HDPE (#2).'}
+      }
     }
-    draw();
-  }catch(e){
-    console.warn("visualizer:",e);
+  ];
+
+  const countryNames = {FR:'France', DE:'Allemagne', UK:'Royaume-Uni', US:'États-Unis'};
+
+  // --- État ---
+  const state = {
+    country: 'FR',
+    placements: {}, // itemId -> 'recyclable' | 'perturbateur' | undefined
+    score: 0,
+    total: ITEMS.length,
+    streak: 0,
+    startTime: Date.now(),
+    timerInt: null
+  };
+
+  // --- Helpers UI ---
+  const el = sel => document.querySelector(sel);
+  const cardsEl = el('#cards');
+  const zoneGood = el('#zone-recyclable');
+  const zoneBad = el('#zone-perturbateur');
+
+  function fmtTime(ms){
+    const s = Math.floor(ms/1000); const m = Math.floor(s/60); const r = s%60;
+    return `${String(m).padStart(2,'0')}:${String(r).padStart(2,'0')}`;
   }
-}
 
-/* ====== Utilities ====== */
-function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  function startTimer(){
+    state.startTime = Date.now();
+    if(state.timerInt) clearInterval(state.timerInt);
+    state.timerInt = setInterval(()=>{
+      el('#timer').textContent = fmtTime(Date.now()-state.startTime);
+    }, 500);
+  }
 
-/* ====== Startup ====== */
-init();
+  function updateHud(){
+    el('#score').textContent = state.score;
+    el('#total').textContent = state.total;
+    el('#streak').textContent = state.streak;
+  }
 
-</script>
+  // --- Génération des cartes ---
+  function renderCards(){
+    cardsEl.innerHTML = '';
+    shuffle([...ITEMS]).forEach(item => {
+      const c = document.createElement('div');
+      c.className = 'card';
+      c.draggable = true;
+      c.id = `card-${item.id}`;
+      c.innerHTML = `
+        <div style="font-size:28px">${item.icon}</div>
+        <div style="flex:1">
+          <div class="item-title">${item.name}</div>
+          <div class="material">${item.material}</div>
+        </div>
+        <span class="badge">Glisser →</span>
+      `;
+      attachDrag(c, item);
+      cardsEl.appendChild(c);
+    });
+  }
+
+  function attachDrag(card, item){
+    card.addEventListener('dragstart', e=>{
+      card.classList.add('dragging');
+      e.dataTransfer.setData('text/plain', item.id);
+    });
+    card.addEventListener('dragend', ()=> card.classList.remove('dragging'));
+  }
+
+  // --- Dropzones ---
+  document.querySelectorAll('.dropzone').forEach(zone=>{
+    zone.addEventListener('dragover', e=>{e.preventDefault(); zone.classList.add('active');});
+    zone.addEventListener('dragleave', ()=> zone.classList.remove('active'));
+    zone.addEventListener('drop', e=>{
+      e.preventDefault();
+      zone.classList.remove('active');
+      const id = e.dataTransfer.getData('text/plain');
+      const item = ITEMS.find(i=>i.id===id);
+      if(!item) return;
+      placeCardInZone(id, zone.dataset.type);
+    });
+  });
+
+  function placeCardInZone(itemId, zoneType){
+    const card = document.getElementById(`card-${itemId}`);
+    if(!card) return;
+    // badge color
+    const badge = card.querySelector('.badge');
+    badge.className='badge ' + (zoneType==='recyclable'?'good':'bad');
+    badge.textContent = zoneType==='recyclable' ? 'Recyclable' : 'Perturbateur';
+    // move
+    (zoneType==='recyclable'?zoneGood:zoneBad).appendChild(card);
+    state.placements[itemId] = zoneType;
+  }
+
+  // --- Validation ---
+  function validate(){
+    let round = 0; let gained = 0; let streakOK = true;
+    ITEMS.forEach(item=>{
+      round++;
+      const expected = item.rules[state.country].type;
+      const given = state.placements[item.id];
+      const card = document.getElementById(`card-${item.id}`);
+      if(!given){streakOK=false; card?.animate([{transform:'translateX(0)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],{duration:180});return;}
+      if(given===expected){
+        gained++;
+        flash(card, 'shadow: 0 0 0 2px var(--good) inset');
+      } else {
+        streakOK=false;
+        flash(card, 'shadow: 0 0 0 2px var(--bad) inset');
+      }
+    });
+    state.score = gained;
+    state.streak = streakOK ? state.streak + 1 : 0;
+    updateHud();
+    if(gained===ITEMS.length){ confettiBurst(); }
+  }
+
+  function flash(elm, css){
+    elm.animate([
+      {boxShadow:'none'},
+      {boxShadow:'0 0 0 6px rgba(255,255,255,.2) inset'},
+      {boxShadow:'none'}
+    ], {duration:500});
+  }
+
+  // --- Explications ---
+  function openExplain(){
+    const list = el('#explainList');
+    list.innerHTML = '';
+    el('#expCountry').textContent = countryNames[state.country];
+    ITEMS.forEach(item=>{
+      const rule = item.rules[state.country];
+      const placed = state.placements[item.id];
+      const row = document.createElement('div');
+      row.className = 'row';
+      row.innerHTML = `
+        <div class="w"><div style="font-size:22px">${item.icon}</div>
+        <div style="font-weight:700">${item.name}</div></div>
+        <div class="material">${item.material}</div>
+        <div>
+          <span class="badge ${rule.type==='recyclable'?'good':'bad'}">Référence : ${rule.type==='recyclable'?'Recyclable':'Perturbateur'}</span>
+          ${placed?`<span class="badge" style="margin-left:8px; border:1px dashed rgba(255,255,255,.3)">Ton tri : ${placed}</span>`:''}
+        </div>
+        <div>${rule.why}</div>
+      `;
+      list.appendChild(row);
+    });
+    el('#explainDialog').showModal();
+  }
+
+  // --- Confetti minimal ---
+  const cf = document.getElementById('confetti');
+  const ctx = cf.getContext('2d');
+  let confs = [];
+  function resize(){ cf.width = innerWidth; cf.height = innerHeight }
+  addEventListener('resize', resize); resize();
+  function confettiBurst(){
+    confs = Array.from({length:120}, (_,i)=>({
+      x: innerWidth/2 + (Math.random()-0.5)*120,
+      y: innerHeight/3,
+      r: Math.random()*3+2,
+      vx: (Math.random()-0.5)*4,
+      vy: Math.random()*-2 - 2,
+      g: Math.random()*0.1 + 0.08,
+      a: 1
+    }));
+    animateConfetti();
+  }
+  function animateConfetti(){
+    ctx.clearRect(0,0,cf.width,cf.height);
+    confs.forEach(p=>{
+      p.vy += p.g; p.x += p.vx; p.y += p.vy; p.a -= .006;
+      ctx.globalAlpha = Math.max(p.a,0);
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle = ['#8fd3ff','#b28bff','#38d39f','#ff6b6b'][Math.floor(Math.random()*4)]; ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    confs = confs.filter(p=>p.a>0 && p.y<innerHeight+20);
+    if(confs.length) requestAnimationFrame(animateConfetti);
+  }
+
+  // --- Utilitaires ---
+  function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]] } return arr }
+
+  function reshuffle(){
+    // Remet toutes les cartes à gauche, puis regénère dans ordre aléatoire
+    state.placements = {}; state.score = 0; updateHud();
+    renderCards();
+  }
+
+  function resetAll(){
+    state.placements = {}; state.score = 0; state.streak = 0; updateHud();
+    renderCards();
+    zoneGood.innerHTML = ''; zoneBad.innerHTML = '';
+    startTimer();
+  }
+
+  // --- Pays ---
+  el('#country').addEventListener('change', e=>{
+    state.country = e.target.value;
+    // mettre à jour badges de référence dans explications si ouvertes
+    if(document.getElementById('explainDialog').open){ openExplain(); }
+  });
+
+  // --- Boutons ---
+  el('#validate').addEventListener('click', validate);
+  el('#showExplanations').addEventListener('click', openExplain);
+  el('#reshuffle').addEventListener('click', reshuffle);
+  el('#reset').addEventListener('click', resetAll);
+
+  // --- Init ---
+  (function init(){
+    state.total = ITEMS.length; updateHud();
+    renderCards();
+    startTimer();
+  })();
+
+  // Accessibilité clavier (placer avec Entrée dans zone active)
+  document.addEventListener('keydown', (e)=>{
+    if(e.key==='Enter'){
+      const first = cardsEl.querySelector('.card');
+      if(first){ placeCardInZone(first.id.replace('card-',''), 'recyclable'); }
+    }
+  })
+  </script>
 </body>
 </html>
