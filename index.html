@@ -1,401 +1,187 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Tri Cosmétiques : Recyclable ou Perturbateur ?</title>
-  <style>
-    :root{
-      --bg:#0f172a;           /* slate-900 */
-      --card:#111827;         /* gray-900 */
-      --muted:#94a3b8;        /* slate-400 */
-      --text:#e5e7eb;         /* gray-200 */
-      --accent:#38bdf8;       /* sky-400 */
-      --good:#22c55e;         /* green-500 */
-      --bad:#ef4444;          /* red-500 */
-      --warm:#f59e0b;         /* amber-500 */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jeu Vietnamien – Mots de politesse</title>
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #fdfdfd;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
     }
-    *{box-sizing:border-box;-webkit-tap-highlight-color: transparent;}
-    html,body{height:100%;}
-    body{
-      margin:0; font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: radial-gradient(1200px 600px at 50% -200px, #1e293b, var(--bg));
-      color:var(--text);
+    .container {
+        max-width: 400px;
+        width: 100%;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        padding: 20px;
+        text-align: center;
     }
-    .app{max-width:560px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;}
-
-    header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg, rgba(15,23,42,0.9), rgba(15,23,42,0.6));backdrop-filter: blur(8px);
-      border-bottom:1px solid rgba(148,163,184,.15);}
-    .topbar{display:flex;align-items:center;gap:.6rem;padding:.8rem .9rem .6rem;}
-    .title{font-weight:800;letter-spacing:.2px;font-size:1.05rem;}
-    .pill{border:1px solid rgba(148,163,184,.25);border-radius:999px;padding:.35rem .7rem; font-size:.78rem;color:var(--muted)}
-    .actions{margin-left:auto;display:flex;gap:.4rem}
-    .btn-icon{border:1px solid rgba(148,163,184,.25);background:#0b1220;color:var(--text);border-radius:12px;padding:.5rem;display:grid;place-items:center}
-    .btn-icon:active{transform:scale(.98)}
-
-    .countries{display:flex;gap:.5rem;overflow:auto;padding:0 .9rem .8rem}
-    .chip{flex:0 0 auto;padding:.55rem .9rem;border-radius:999px;border:1.5px solid rgba(148,163,184,.25);color:var(--muted);font-weight:700;font-size:.9rem;background:#0b1220}
-    .chip.active{border-color:var(--accent);color:#081018;background:linear-gradient(180deg,#7dd3fc,#38bdf8);}
-
-    .progress{height:8px;background:#0b1220;border-radius:999px;margin:.3rem .9rem .9rem;border:1px solid rgba(148,163,184,.15);overflow:hidden}
-    .bar{height:100%;width:0;background:linear-gradient(90deg,#22c55e,#38bdf8); transition:width .4s ease}
-
-    main{flex:1;display:flex;align-items:center;justify-content:center;padding:1rem .9rem 5.5rem}
-
-    .card{width:100%;background:linear-gradient(180deg,#0b1220,#0b1220 60%,#0a0f1c);border:1px solid rgba(148,163,184,.15);border-radius:22px;box-shadow:0 10px 30px rgba(0,0,0,.35);
-      padding:1rem;}
-    .tag{display:inline-flex;gap:.4rem;align-items:center;font-size:.78rem;color:var(--muted);border:1px dashed rgba(148,163,184,.3);padding:.25rem .55rem;border-radius:10px}
-    .item-title{font-size:1.35rem;font-weight:900;margin:.6rem 0 .3rem;letter-spacing:.2px}
-    .desc{color:var(--muted);font-size:.95rem;margin:.2rem 0 .8rem}
-    .choices{display:grid;gap:.6rem}
-    .choice{
-      border-radius:16px;padding:1rem 1rem;display:flex;align-items:center;justify-content:space-between;
-      font-weight:900;font-size:1.05rem;border:1.5px solid rgba(148,163,184,.2);background:#0b1220;}
-    .choice span{opacity:.9}
-    .choice .hint{font-weight:700;font-size:.8rem;color:var(--muted)}
-    .choice.good{border-color:rgba(34,197,94,.6);background:linear-gradient(180deg, rgba(34,197,94,.12), rgba(34,197,94,.05));}
-    .choice.bad{border-color:rgba(239,68,68,.6);background:linear-gradient(180deg, rgba(239,68,68,.12), rgba(239,68,68,.05));}
-    .choice:active{transform:scale(.99)}
-
-    .explain{margin-top:.8rem;font-size:.92rem;line-height:1.25rem;color:var(--muted)}
-    .explain strong{color:var(--text)}
-
-    .bottomsheet{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(180deg,#0b1220,#0b1220);
-      border-top:1px solid rgba(148,163,184,.2);border-radius:16px 16px 0 0;padding:.7rem .9rem env(safe-area-inset-bottom);
-      display:flex;gap:.5rem;align-items:center}
-    .cta{flex:1;border:none;background:linear-gradient(180deg,#7dd3fc,#38bdf8);color:#081018;font-weight:900;padding:1rem;border-radius:14px;font-size:1.05rem}
-    .sec{flex:0 0 auto;border:1px solid rgba(148,163,184,.25);background:#0b1220;color:var(--text);font-weight:800;padding:.9rem;border-radius:14px}
-
-    .toast{position:fixed;left:50%;bottom:6.5rem;transform:translateX(-50%);background:#0b1220;border:1px solid rgba(148,163,184,.25);padding:.6rem .8rem;border-radius:12px;color:var(--muted);font-weight:700;opacity:0;transition:opacity .2s}
-    .toast.show{opacity:1}
-
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end}
-    .modal.open{display:flex}
-    .sheet{width:100%;max-width:560px;margin:0 auto;background:#0b1220;border-radius:16px 16px 0 0;border:1px solid rgba(148,163,184,.2);padding:1rem .9rem calc(1rem + env(safe-area-inset-bottom));}
-    .sheet h3{margin:.2rem 0 .6rem;font-size:1.1rem}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
-    .toggle{display:flex;align-items:center;justify-content:space-between;border:1px solid rgba(148,163,184,.25);padding:.6rem .7rem;border-radius:12px}
-    .toggle label{font-size:.9rem;color:var(--muted)}
-    .toggle input{transform:scale(1.2)}
-
-    .end{display:none;flex-direction:column;gap:1rem;align-items:center;text-align:center}
-    .end .score{font-size:2.2rem;font-weight:900}
-    .end .again{padding:1rem 1.2rem;font-weight:900;border-radius:14px;border:none;background:linear-gradient(180deg,#7dd3fc,#38bdf8)}
-
-    /* fun confetti */
-    .confetti{pointer-events:none;position:fixed;inset:0;overflow:hidden}
-    .confetti i{position:absolute;width:8px;height:16px;background:linear-gradient(180deg,#7dd3fc,#22c55e);opacity:.9;border-radius:2px;animation:fall 900ms linear forwards}
-    @keyframes fall{to{transform:translateY(100vh) rotate(600deg);opacity:0}}
-  </style>
+    h1 {
+        font-size: 1.4rem;
+        margin-bottom: 10px;
+        color: #444;
+    }
+    .question {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+    .options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    button.option {
+        background: #f2f6f5;
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+    button.option:hover {
+        background: #e0f0ed;
+    }
+    .score {
+        margin-top: 15px;
+        font-size: 1rem;
+        color: #777;
+    }
+    .result {
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-top: 15px;
+    }
+    .btn-restart {
+        margin-top: 15px;
+        background: #ff8b6a;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+    .btn-restart:hover {
+        background: #ff704d;
+    }
+</style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div class="topbar">
-        <div class="title">♻️ Tri Cosmétiques</div>
-        <div class="pill">Mobile • tactile</div>
-        <div class="actions">
-          <button class="btn-icon" id="btnRules" aria-label="Règles locales">📜</button>
-          <button class="btn-icon" id="btnInfo" aria-label="À propos">ℹ️</button>
-        </div>
-      </div>
-      <div class="countries" id="countryChips" role="tablist" aria-label="Pays">
-        <!-- chips inserted by JS -->
-      </div>
-      <div class="progress" aria-hidden="true"><div class="bar" id="bar"></div></div>
-    </header>
 
-    <main>
-      <div class="card" id="card">
-        <!-- Game card injected here -->
-      </div>
-      <div class="end" id="end">
-        <div class="score" id="scoreText">0 / 0</div>
-        <div class="desc">Tu as terminé ce parcours. Tu peux rejouer ou ajuster les règles locales (📜) pour coller à ta réalité terrain.</div>
-        <button class="again" id="again">Rejouer</button>
-      </div>
-    </main>
+<div class="container">
+    <h1>🇻🇳 Mots de politesse</h1>
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+    <div class="score" id="score"></div>
+    <div class="result" id="result"></div>
+    <button class="btn-restart" id="restartBtn" style="display:none;">Rejouer</button>
+</div>
 
-    <div class="bottomsheet">
-      <button class="sec" id="btnPrev">◀︎ Préc.</button>
-      <button class="cta" id="btnNext">Suivant ▶︎</button>
-    </div>
-
-    <div class="toast" id="toast">Petit rappel : ces règles sont simplifiées pour le jeu. Ajuste via 📜 si besoin.</div>
-
-    <!-- Modal Règles locales -->
-    <div class="modal" id="rulesModal" aria-hidden="true" aria-labelledby="rulesTitle">
-      <div class="sheet">
-        <h3 id="rulesTitle">📜 Règles locales (simplifiées)</h3>
-        <p class="desc">Chaque pays peut avoir des consignes différentes. Tu peux ajuster ci‑dessous ce que tu considères <strong>recyclable</strong> (ON) ou <strong>perturbateur</strong> (OFF) pour chaque item.</p>
-        <div id="rulesGrid"></div>
-        <div style="display:flex;gap:.5rem;margin-top:.8rem">
-          <button class="sec" id="resetRules">Réinitialiser</button>
-          <button class="cta" id="saveRules">Enregistrer</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal Info -->
-    <div class="modal" id="infoModal" aria-hidden="true" aria-labelledby="infoTitle">
-      <div class="sheet">
-        <h3 id="infoTitle">ℹ️ À propos</h3>
-        <p class="desc">
-          Ce mini‑jeu éducatif t’entraîne à reconnaître les emballages cosmétiques <strong>recyclables</strong> et ceux qui sont <strong>perturbateurs</strong> selon le pays.
-          Les règles intégrées sont <em>pédagogiques et simplifiées</em> — elles ne remplacent pas les consignes officielles locales. Utilise 📜 pour les adapter.
-        </p>
-        <button class="cta" id="closeInfo">OK</button>
-      </div>
-    </div>
-
-    <div class="confetti" id="confetti"></div>
-  </div>
-
-  <script>
-    // --- Data ---------------------------------------------------------------
-    const COUNTRIES = [
-      { id:'FR', name:'France 🇫🇷' },
-      { id:'DE', name:'Allemagne 🇩🇪' },
-      { id:'UK', name:'Royaume‑Uni 🇬🇧' },
-    ];
-
-    const ITEMS = [
-      { id:'lip_abs', emoji:'💄', title:'Rouge à lèvres en ABS', spec:'Petit format, corps en ABS.', tips:'Beaucoup de centres ne trient pas l’ABS en flux ménager. Favoriser les recharges / retours boutique.' },
-      { id:'pet_lbl', emoji:'🧴', title:'Shampooing PET transparent + étiquette opaque', spec:'Bouteille PET claire, étiquette couvrante.', tips:'Les étiquettes opaques larges peuvent perturber la reconnaissance optique. Étiquette détachable = mieux.' },
-      { id:'pp_jar', emoji:'🫙', title:'Pot de crème en PP opaque', spec:'Pot rigide en polypropylène.', tips:'Le PP rigide est souvent accepté dans les filières modernes.' },
-      { id:'pp_compact', emoji:'🎨', title:'Boîtier de maquillage en PP', spec:'Petit boîtier compact en PP (sans miroir).', tips:'Les très petits formats peuvent être mal captés. Conception mono‑matière = atout.' },
-      { id:'pe_opaque', emoji:'🚿', title:'Flacon de douche en PE opaque', spec:'Bouteille HDPE/PE, pigmentée.', tips:'Pigments (ex. noir de carbone) peuvent gêner le tri NIR. Privilégier pigments détectables.' },
-    ];
-
-    // Valeurs par défaut (purement pédagogiques). true=recyclable, false=perturbateur
-    const DEFAULT_RULES = {
-      FR: { lip_abs:false, pet_lbl:false, pp_jar:true,  pp_compact:true,  pe_opaque:true },
-      DE: { lip_abs:false, pet_lbl:true,  pp_jar:true,  pp_compact:false, pe_opaque:true },
-      UK: { lip_abs:false, pet_lbl:false, pp_jar:true,  pp_compact:false, pe_opaque:true },
-    };
-
-    // Explications contextuelles par pays + item
-    const EXPLAINS = {
-      FR: {
-        pet_lbl: "Étiquette opaque couvrante : souvent classé perturbateur si non détachable.",
-        pp_compact: "Format mono‑matière PP : capté plus souvent depuis l’extension des consignes.",
-      },
-      DE: {
-        pet_lbl: "Flux PET clair performant : étiquettes prises en charge si spécifiées.",
-        pp_compact: "Très petit format : risque de rejet, d’où classification perturbateur.",
-      },
-      UK: {
-        pet_lbl: "Les étiquettes opaques peuvent orienter vers la fraction résiduelle.",
-      }
-    };
-
-    // --- State --------------------------------------------------------------
-    let state = {
-      country: localStorage.getItem('tri_country') || 'FR',
-      index: 0,
-      answers: [], // {itemId, isRecyclable(bool), correct(bool)}
-      rules: loadRules(),
-    };
-
-    function loadRules(){
-      const raw = localStorage.getItem('tri_rules');
-      if(!raw){ return JSON.parse(JSON.stringify(DEFAULT_RULES)); }
-      try{ const parsed = JSON.parse(raw); return {...DEFAULT_RULES, ...parsed}; }catch{ return JSON.parse(JSON.stringify(DEFAULT_RULES)); }
+<script>
+const quizData = [
+    {
+        question: "Comment dit-on 'Bonjour' en vietnamien ?",
+        options: ["Xin chào", "Cảm ơn", "Tạm biệt"],
+        answer: "Xin chào"
+    },
+    {
+        question: "Comment dit-on 'Merci' en vietnamien ?",
+        options: ["Xin lỗi", "Cảm ơn", "Chào buổi sáng"],
+        answer: "Cảm ơn"
+    },
+    {
+        question: "Comment dit-on 'Au revoir' en vietnamien ?",
+        options: ["Tạm biệt", "Xin chào", "Cảm ơn"],
+        answer: "Tạm biệt"
+    },
+    {
+        question: "Comment dit-on 'Pardon/Désolé' en vietnamien ?",
+        options: ["Xin lỗi", "Cảm ơn", "Tạm biệt"],
+        answer: "Xin lỗi"
+    },
+    {
+        question: "Comment dit-on 'Oui' en vietnamien ?",
+        options: ["Không", "Vâng", "Xin chào"],
+        answer: "Vâng"
+    },
+    {
+        question: "Comment dit-on 'Non' en vietnamien ?",
+        options: ["Không", "Tạm biệt", "Cảm ơn"],
+        answer: "Không"
     }
-    function saveRules(){ localStorage.setItem('tri_rules', JSON.stringify(state.rules)); }
+];
 
-    // --- UI build -----------------------------------------------------------
-    const chipsWrap = document.getElementById('countryChips');
-    const bar = document.getElementById('bar');
-    const card = document.getElementById('card');
-    const end = document.getElementById('end');
-    const scoreText = document.getElementById('scoreText');
+let currentQuestionIndex = 0;
+let score = 0;
 
-    function renderChips(){
-      chipsWrap.innerHTML = '';
-      COUNTRIES.forEach(c => {
-        const b = document.createElement('button');
-        b.className = 'chip' + (state.country===c.id?' active':'');
-        b.role = 'tab';
-        b.setAttribute('aria-selected', state.country===c.id);
-        b.textContent = c.name;
-        b.onclick = ()=>{ state.country = c.id; localStorage.setItem('tri_country', state.country); showToast(`${c.name} sélectionné·e`); render(); };
-        chipsWrap.appendChild(b);
-      })
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const scoreEl = document.getElementById("score");
+const resultEl = document.getElementById("result");
+const restartBtn = document.getElementById("restartBtn");
+
+function loadQuestion() {
+    const currentQuestion = quizData[currentQuestionIndex];
+    questionEl.textContent = currentQuestion.question;
+    optionsEl.innerHTML = "";
+
+    currentQuestion.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.textContent = option;
+        btn.classList.add("option");
+        btn.addEventListener("click", () => selectAnswer(option));
+        optionsEl.appendChild(btn);
+    });
+
+    scoreEl.textContent = `Question ${currentQuestionIndex + 1} / ${quizData.length}`;
+}
+
+function selectAnswer(selectedOption) {
+    const correctAnswer = quizData[currentQuestionIndex].answer;
+    if (selectedOption === correctAnswer) {
+        score++;
     }
+    currentQuestionIndex++;
 
-    function progress(){
-      const pct = Math.round((state.index)/ITEMS.length*100);
-      bar.style.width = pct + '%';
+    if (currentQuestionIndex < quizData.length) {
+        loadQuestion();
+    } else {
+        showResult();
     }
+}
 
-    function vibrate(ms){ try{ window.navigator.vibrate && window.navigator.vibrate(ms);}catch(e){} }
+function showResult() {
+    questionEl.style.display = "none";
+    optionsEl.style.display = "none";
+    scoreEl.style.display = "none";
+    resultEl.textContent = `Votre score : ${score} / ${quizData.length}`;
+    restartBtn.style.display = "block";
+}
 
-    function confettiBurst(){
-      const root = document.getElementById('confetti');
-      for(let i=0;i<22;i++){
-        const f=document.createElement('i');
-        f.style.left = Math.random()*100 + 'vw';
-        f.style.top = '-10px';
-        f.style.transform = `translateY(0) rotate(${Math.random()*360}deg)`;
-        f.style.animationDuration = 500 + Math.random()*700 + 'ms';
-        root.appendChild(f);
-        setTimeout(()=>f.remove(),1200);
-      }
-    }
+restartBtn.addEventListener("click", () => {
+    currentQuestionIndex = 0;
+    score = 0;
+    questionEl.style.display = "block";
+    optionsEl.style.display = "flex";
+    scoreEl.style.display = "block";
+    resultEl.textContent = "";
+    restartBtn.style.display = "none";
+    loadQuestion();
+});
 
-    function renderCard(){
-      const it = ITEMS[state.index];
-      const countryRules = state.rules[state.country];
-      const msg = EXPLAINS?.[state.country]?.[it.id] || it.tips;
-      card.innerHTML = `
-        <div class="tag">${it.emoji} <span>${it.spec}</span></div>
-        <div class="item-title">${it.title}</div>
-        <div class="desc">Pays sélectionné : <strong>${COUNTRIES.find(c=>c.id===state.country).name}</strong></div>
-        <div class="choices">
-          <button class="choice" id="btnRecy">
-            <span>✅ Recyclable</span>
-            <span class="hint">Flux accepté</span>
-          </button>
-          <button class="choice" id="btnPert">
-            <span>⚠️ Perturbateur</span>
-            <span class="hint">À éco‑concevoir</span>
-          </button>
-        </div>
-        <div class="explain" id="exp">${msg}</div>
-      `;
+loadQuestion();
+</script>
 
-      // answer handlers
-      document.getElementById('btnRecy').onclick = ()=>answer(true);
-      document.getElementById('btnPert').onclick = ()=>answer(false);
-
-      // style buttons based on previous answer if exists
-      const prev = state.answers.find(a=>a.itemId===it.id && a.country===state.country);
-      if(prev){
-        const correct = prev.correct;
-        document.getElementById('btnRecy').classList.toggle('good', correct && prev.isRecyclable);
-        document.getElementById('btnRecy').classList.toggle('bad', !correct && prev.isRecyclable);
-        document.getElementById('btnPert').classList.toggle('good', correct && !prev.isRecyclable);
-        document.getElementById('btnPert').classList.toggle('bad', !correct && !prev.isRecyclable);
-      }
-    }
-
-    function answer(isRecyclable){
-      const it = ITEMS[state.index];
-      const correct = state.rules[state.country][it.id] === isRecyclable;
-      // store/replace answer for this item+country
-      const idx = state.answers.findIndex(a=>a.itemId===it.id && a.country===state.country);
-      const record = { itemId:it.id, country:state.country, isRecyclable, correct };
-      if(idx>-1) state.answers.splice(idx,1,record); else state.answers.push(record);
-
-      // feedback
-      const btnR = document.getElementById('btnRecy');
-      const btnP = document.getElementById('btnPert');
-      btnR.classList.remove('good','bad');
-      btnP.classList.remove('good','bad');
-      const msgBox = document.getElementById('exp');
-
-      if(correct){
-        (isRecyclable?btnR:btnP).classList.add('good');
-        confettiBurst(); vibrate(10);
-        msgBox.innerHTML = '<strong>Juste !</strong> ' + (EXPLAINS?.[state.country]?.[it.id] || it.tips);
-      } else {
-        (isRecyclable?btnR:btnP).classList.add('bad');
-        vibrate([8,40,8]);
-        const expected = state.rules[state.country][it.id] ? 'recyclable' : 'perturbateur';
-        msgBox.innerHTML = `❌ Réponse attendue : <strong>${expected.toUpperCase()}</strong>. ${EXPLAINS?.[state.country]?.[it.id] || it.tips}`;
-      }
-
-      saveProgress();
-    }
-
-    function saveProgress(){ localStorage.setItem('tri_answers', JSON.stringify(state.answers)); }
-
-    function loadProgress(){
-      try{ state.answers = JSON.parse(localStorage.getItem('tri_answers')||'[]') || []; }catch{ state.answers=[]; }
-    }
-
-    function next(){
-      if(state.index < ITEMS.length-1){ state.index++; render(); }
-      else finish();
-    }
-    function prev(){ if(state.index>0){ state.index--; render(); }
-    }
-
-    function finish(){
-      const correct = state.answers.filter(a=> a.country===state.country && a.correct).length;
-      scoreText.textContent = `${correct} / ${ITEMS.length}`;
-      card.style.display='none';
-      end.style.display='flex';
-    }
-
-    function resetGame(){
-      state.index=0; end.style.display='none'; card.style.display='block';
-      render();
-    }
-
-    function render(){
-      renderChips();
-      progress();
-      renderCard();
-    }
-
-    // --- Rules Modal -------------------------------------------------------
-    const rulesModal = document.getElementById('rulesModal');
-    const infoModal = document.getElementById('infoModal');
-    const rulesGrid = document.getElementById('rulesGrid');
-
-    function openRules(){
-      rulesModal.classList.add('open');
-      buildRulesGrid();
-    }
-    function closeRules(){ rulesModal.classList.remove('open'); }
-
-    function buildRulesGrid(){
-      rulesGrid.innerHTML='';
-      COUNTRIES.forEach(c=>{
-        const h = document.createElement('h3'); h.textContent = c.name; h.style.marginTop='0.8rem'; rulesGrid.appendChild(h);
-        const wrap = document.createElement('div'); wrap.className='grid';
-        ITEMS.forEach(it=>{
-          const row = document.createElement('div'); row.className='toggle';
-          row.innerHTML = `<label>${it.emoji} ${it.title}</label>`;
-          const sw = document.createElement('input'); sw.type='checkbox'; sw.checked = !!state.rules[c.id][it.id];
-          sw.onchange = ()=>{ state.rules[c.id][it.id] = !!sw.checked; };
-          row.appendChild(sw); wrap.appendChild(row);
-        });
-        rulesGrid.appendChild(wrap);
-      });
-    }
-
-    document.getElementById('saveRules').onclick = ()=>{ saveRules(); closeRules(); showToast('Règles mises à jour ✔︎'); render(); };
-    document.getElementById('resetRules').onclick = ()=>{ state.rules = JSON.parse(JSON.stringify(DEFAULT_RULES)); saveRules(); buildRulesGrid(); showToast('Règles réinitialisées'); };
-
-    document.getElementById('btnRules').onclick = openRules;
-    rulesModal.addEventListener('click', (e)=>{ if(e.target===rulesModal) closeRules(); });
-
-    // Info modal
-    document.getElementById('btnInfo').onclick = ()=> infoModal.classList.add('open');
-    document.getElementById('closeInfo').onclick = ()=> infoModal.classList.remove('open');
-    infoModal.addEventListener('click', (e)=>{ if(e.target===infoModal) infoModal.classList.remove('open'); });
-
-    // Toast helpers
-    const toast = document.getElementById('toast');
-    let toastTimer;
-    function showToast(txt){
-      toast.textContent = txt; toast.classList.add('show');
-      clearTimeout(toastTimer); toastTimer = setTimeout(()=>toast.classList.remove('show'), 1600);
-    }
-
-    // Bottom controls
-    document.getElementById('btnNext').onclick = next;
-    document.getElementById('btnPrev').onclick = prev;
-    document.getElementById('again').onclick = resetGame;
-
-    // Init
-    loadProgress();
-    render();
-    setTimeout(()=> toast.classList.add('show'), 800);
-    setTimeout(()=> toast.classList.remove('show'), 3400);
-  </script>
 </body>
 </html>
